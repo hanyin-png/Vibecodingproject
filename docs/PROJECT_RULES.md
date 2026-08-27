@@ -40,9 +40,10 @@ Vibecodingproject/
 ├── frontend/           # Vue3 前端
 ├── data/               # C-MAPSS 原始数据与 app.db
 ├── tests/              # pytest
-├── prompt日志/          # 过程档案（关键 prompt 截图、AI 出错案例）
-├── PROJECT_RULES.md    # 本文件
-├── 需求规格说明书.md
+├── prompt/             # AI 会话记录备份（jsonl，每阶段同步更新）
+├── docs/
+│   ├── PROJECT_RULES.md    # 本文件
+│   └── 需求规格说明书.md
 ├── README.md
 └── requirements.txt
 ```
@@ -83,7 +84,7 @@ Vibecodingproject/
 4. **禁止造假**：禁止 mock 数据冒充功能（数据必须真实来自 SQLite 或模型推理）；
 5. **测试同步**：每个后端接口和算法模块写 pytest 用例；
 6. **出错止损**：同一 bug 连续两次修不好，停止再改，给出最小复现和原因分析，交人类决策；
-7. **过程留痕**：每完成一个功能点提醒 git 小步提交（commit 说明写清干了什么，禁止 "update"）；关键 prompt 与 AI 出错案例提醒截图存 `prompt日志/`。
+7. **过程留痕**：每完成一个功能点提醒 git 小步提交（commit 说明写清干了什么，禁止 "update"）；关键 prompt 与 AI 出错案例备份到 `prompt/`（jsonl 会话记录 + 截图）。
 
 ## 8. 新手必踩的坑（预防清单）
 
