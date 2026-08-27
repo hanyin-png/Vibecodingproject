@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+
+# 运行时生成的数据库文件（可随时由 import_data.py 重新生成）
+data/app.db
+
+# 前端依赖与构建产物
+node_modules/
+dist/
+
+# 编辑器
+.vscode/
