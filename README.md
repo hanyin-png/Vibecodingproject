@@ -31,13 +31,18 @@
 
 ```
 Vibecodingproject/
-├── backend/            # FastAPI 后端（接口、数据库、模型文件）
-├── algorithms/         # 算法模块（RUL 预测、规则引擎、异常检测、数据入库）
+├── backend/            # FastAPI 后端
+│   ├── main.py         # 入口与路由注册
+│   ├── database.py     # 数据库连接与业务建表
+│   ├── routers/        # 7 组接口（设备/传感器/预测/预警/诊断/异常检测/工单）
+│   └── models/         # 训练好的模型文件（rf_rul.pkl / isoforest.pkl / scaler.pkl）
+├── algorithms/         # 算法模块（随机森林/规则引擎/异常检测/数据入库/可视化）
 ├── frontend/           # Vue3 前端
-├── data/               # C-MAPSS FD001 原始数据（train/test/RUL 三个文件；app.db 等生成文件不上传仓库）
+├── data/               # C-MAPSS FD001 原始数据 + processed/ 预处理结果（app.db 不上传仓库）
 ├── docs/               # 项目文档（需求规格说明书、开发规则等）
-├── tests/              # pytest 自动化测试
+├── tests/              # pytest 自动化测试（14 项）
 ├── prompt/             # AI 会话记录备份（jsonl，每阶段同步更新）
+├── 一键启动.bat         # 双击启动整个系统
 ├── 学习笔记.md          # 阶段1：AI 工具学习、harness 与模型选型、git 原理、选题调研
 ├── 选题说明.md          # 阶段2：题目、目标、技术方向（含业务闭环图、技术方向映射图）
 ├── 方案设计.md          # 阶段2：需求分析、方案论证、技术路线（含架构图）、计划
@@ -79,13 +84,28 @@ npm run dev
 
 注意：两个服务窗口都要保持开启；`data/app.db` 不上传仓库，换电脑/重新克隆后必须先执行第①步。
 
+## 接口清单
+
+后端全部接口（前缀 `http://127.0.0.1:8000`）：
+
+| 模块 | 方法与路径 | 功能 |
+|---|---|---|
+| 设备台账 | `GET/POST /api/equipment`、`PUT/DELETE /api/equipment/{id}` | 设备增删改查 |
+| 数据监测 | `GET /api/sensor/{unit}?start=&end=` | 传感器数据查询（按循环范围过滤） |
+| 健康评估 | `POST /api/predict/{equipment_id}` | 随机森林 RUL 预测并入库，RUL ≤ 90 自动生成预警 |
+| 健康评估 | `GET /api/predict/history/{equipment_id}` | 历史评估记录 |
+| 预警中心 | `GET /api/alarms?status=`、`PUT /api/alarms/{id}/resolve` | 预警列表、标记已处理 |
+| 智能诊断 | `POST /api/diagnose/{alarm_id}` | 规则引擎输出疑似故障部位 + 分层排查建议 |
+| 异常检测 | `POST /api/anomaly/{equipment_id}` | 孤立森林检测，异常自动生成"传感器异常"预警 |
+| 维修工单 | `GET /api/workorders`、`POST /api/workorders/from-alarm/{alarm_id}`、`PUT /api/workorders/{id}/status` | 从预警一键生成工单（带入诊断建议）、状态流转（待处理→维修中→已完成） |
+
 ## 开发进度
 
 - [x] D1~D2：工具配置、vibe coding 学习、选题调研（见 学习笔记.md）
-- [x] D3~D5（方案文档）：选题说明、方案设计（含业务闭环图 / 架构图 / 技术方向映射图）、需求规格说明书
-- [ ] D3~D5（收尾）：前后端骨架搭建与联通
+- [x] D3~D5：选题说明、方案设计（含图）、需求规格说明书、前后端骨架联通（见 prompt/ 截图）
 - [x] 阶段3（数据准备）：数据集与预处理结果入库 `data/`、`data/README.md` 说明、`prompt/` 会话记录备份（每阶段同步更新）
-- [ ] D6：数据清洗入库 SQLite、随机森林模型训练（输出 MAE/RMSE）
-- [ ] D7~D8：后端接口、前端页面、算法模块接入
+- [x] D6：数据清洗入库 SQLite（100 台设备 + 13096 行传感器数据）、随机森林模型训练（MAE=11.84，RMSE=15.50）
+- [x] D7：后端 7 组接口全部完成，业务闭环后端链路打通，pytest 14 项全绿
+- [ ] D8：前端 6 个页面接入真实接口、业务闭环联调
 - [ ] D9：集成测试、设计报告、演示视频
 - [ ] D10：答辩
