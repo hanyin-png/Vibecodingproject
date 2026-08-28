@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import equipment, sensor
+from routers import equipment, predict, sensor
 
 app = FastAPI(title="工业设备智能运维与预测性维护平台")
 
@@ -18,6 +18,12 @@ app.add_middleware(
 # 注册各模块路由
 app.include_router(equipment.router)
 app.include_router(sensor.router)
+app.include_router(predict.router)
+
+# 启动时确保业务表（prediction / alarm / work_order）存在
+from database import create_business_tables  # noqa: E402
+
+create_business_tables()
 
 
 @app.get("/api/hello")
