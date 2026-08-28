@@ -3,6 +3,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from routers import equipment, sensor
+
 app = FastAPI(title="工业设备智能运维与预测性维护平台")
 
 # 允许前端开发服务器（Vite 默认 5173 端口）跨域访问本后端
@@ -12,6 +14,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 注册各模块路由
+app.include_router(equipment.router)
+app.include_router(sensor.router)
 
 
 @app.get("/api/hello")
