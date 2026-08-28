@@ -58,7 +58,26 @@ Vibecodingproject/
 
 ## 运行方式
 
-项目开发中，骨架搭好后补充启动步骤。
+**一键启动（推荐）**：双击仓库根目录的 `一键启动.bat`，自动初始化数据库（首次）并拉起前后端，然后浏览器打开 http://localhost:5173 。（bat 里的 Anaconda 路径换电脑后需改成实际路径）
+
+**手动启动**（环境：Python 3.10+ 并 `pip install -r requirements.txt`；Node.js LTS 并在 `frontend/` 执行过一次 `npm install`）：
+
+```powershell
+# ① 首次运行 / 重新克隆后：生成数据库（data/app.db）和归一化参数
+D:\admin\Anaconda\envs\phm\python.exe algorithms\import_data.py
+
+# ② 启动后端（在 backend\ 目录，保持窗口开着）
+cd backend
+D:\admin\Anaconda\envs\phm\python.exe -m uvicorn main:app --port 8000
+
+# ③ 启动前端（新开一个终端，在 frontend\ 目录）
+cd frontend
+npm run dev
+```
+
+然后浏览器打开 http://localhost:5173 。接口验证：`curl http://127.0.0.1:8000/api/equipment` 应返回设备列表。
+
+注意：两个服务窗口都要保持开启；`data/app.db` 不上传仓库，换电脑/重新克隆后必须先执行第①步。
 
 ## 开发进度
 
