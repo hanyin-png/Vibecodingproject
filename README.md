@@ -46,13 +46,15 @@ Vibecodingproject/
 
 ## 数据集说明
 
-使用 NASA C-MAPSS 数据集的 FD001 子集：
+使用 NASA C-MAPSS 数据集的 FD001 子集（公开数据集）：
 
 - `train_FD001.txt`：100 台发动机完整寿命数据，用于训练模型
 - `test_FD001.txt`：100 台设备中途数据，模拟在役设备，用于系统演示
 - `RUL_FD001.txt`：test 集真实剩余寿命，用于验证预测精度
 
-获取渠道：飞桨 AI Studio / 魔搭 ModelScope 搜索"C-MAPSS"，或 [NASA Prognostics Data Repository](https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/) 第 6 项。
+来源链接：[NASA Prognostics Data Repository](https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/)（第 6 项，介绍页）；实际文件获取自 [GitHub 开源镜像](https://github.com/mapr-demos/predictive-maintenance/tree/master/notebooks/jupyter/Dataset/CMAPSSData)（NASA 官方直链已失效，内容一致）。
+
+**数据预处理**：由 `algorithms/import_data.py` 完成——剔除 7 个恒定传感器列、min-max 归一化（参数存 `backend/models/scaler.pkl`）、构造 RUL 标签（截断 125）、导入 SQLite。预处理后的数据文件在 `data/processed/`（train_clean.csv / test_clean.csv），详细说明见 `data/README.md`。
 
 ## 运行方式
 
@@ -63,7 +65,7 @@ Vibecodingproject/
 - [x] D1~D2：工具配置、vibe coding 学习、选题调研（见 学习笔记.md）
 - [x] D3~D5（方案文档）：选题说明、方案设计（含业务闭环图 / 架构图 / 技术方向映射图）、需求规格说明书
 - [ ] D3~D5（收尾）：前后端骨架搭建与联通
-- [x] 阶段3（数据资源）：C-MAPSS FD001 数据集入库 `data/`、`prompt/` 会话记录备份（后续每阶段同步更新）
+- [x] 阶段3（数据准备）：数据集与预处理结果入库 `data/`、`data/README.md` 说明、`prompt/` 会话记录备份（每阶段同步更新）
 - [ ] D6：数据清洗入库 SQLite、随机森林模型训练（输出 MAE/RMSE）
 - [ ] D7~D8：后端接口、前端页面、算法模块接入
 - [ ] D9：集成测试、设计报告、演示视频

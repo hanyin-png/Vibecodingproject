@@ -101,8 +101,25 @@ def main():
     scaler_path = os.path.join(MODEL_DIR, "scaler.pkl")
     joblib.dump(scaler, scaler_path)
 
+    # 5. 导出预处理后的数据文件到 data/processed/（剔除恒定列 + 归一化）
+    processed_dir = os.path.join(DATA_DIR, "processed")
+    os.makedirs(processed_dir, exist_ok=True)
+
+    # 训练集：加 RUL 标签 + 归一化传感器列
+    max_cycle = train_df.groupby("unit")["cycle"].transform("max")
+    train_clean = train_df[["unit", "cycle"]].copy()
+    train_clean[USED_SENSORS] = scaler.transform(train_df[USED_SENSORS])
+    train_clean["rul"] = (max_cycle - train_df["cycle"]).clip(upper=125)
+    train_clean.to_csv(os.path.join(processed_dir, "train_clean.csv"), index=False)
+
+    # test 集：归一化传感器列（无 RUL 标签，模拟在役设备）
+    test_clean = test_df[["unit", "cycle"]].copy()
+    test_clean[USED_SENSORS] = scaler.transform(test_df[USED_SENSORS])
+    test_clean.to_csv(os.path.join(processed_dir, "test_clean.csv"), index=False)
+
     print(f"sensor_data 入库 {len(test_df)} 行，equipment 入库 {len(equipment)} 台")
     print(f"归一化参数已保存：{scaler_path}（覆盖 {len(USED_SENSORS)} 个有效传感器列）")
+    print(f"预处理数据已导出：data/processed/train_clean.csv（{len(train_clean)} 行）、test_clean.csv（{len(test_clean)} 行）")
 
 
 if __name__ == "__main__":
