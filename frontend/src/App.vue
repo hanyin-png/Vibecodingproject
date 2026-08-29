@@ -1,37 +1,46 @@
 <script setup>
-import { ref } from 'vue'
-import api from './api'
-
-// 后端返回的内容，先给个初始提示
-const message = ref('还没请求后端，点下面按钮试试')
-
-async function testHello() {
-  try {
-    const resp = await api.get('/hello')
-    message.value = resp.data.message + '（来自 ' + resp.data.project + '）'
-  } catch (err) {
-    message.value = '请求失败：' + err.message + '（后端启动了吗？）'
-  }
-}
+// 整体布局：左侧导航 + 右侧内容区（router-view 显示当前页面）
+const menus = [
+  { path: '/equipment', title: '设备台账' },
+  { path: '/monitor', title: '数据监测' },
+  { path: '/predict', title: '健康评估' },
+  { path: '/alarms', title: '预警中心' },
+  { path: '/diagnose', title: '智能诊断' },
+  { path: '/workorders', title: '维修工单' },
+]
 </script>
 
 <template>
-  <div class="page">
-    <h1>工业设备智能运维与预测性维护平台</h1>
-    <p>前后端联通验证：{{ message }}</p>
-    <el-button type="primary" @click="testHello">测试后端联通</el-button>
-  </div>
+  <el-container class="layout">
+    <el-aside width="200px">
+      <div class="logo">设备智能运维平台</div>
+      <el-menu :default-active="$route.path" router>
+        <el-menu-item v-for="m in menus" :key="m.path" :index="m.path">
+          {{ m.title }}
+        </el-menu-item>
+      </el-menu>
+    </el-aside>
+    <el-main>
+      <router-view />
+    </el-main>
+  </el-container>
 </template>
 
 <style scoped>
-.page {
-  max-width: 640px;
-  margin: 60px auto;
-  text-align: center;
+.layout {
+  height: 100vh;
 }
-
-.page h1 {
-  font-size: 28px;
-  line-height: 1.4;
+.logo {
+  padding: 18px 16px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #303133;
+  border-bottom: 1px solid #e4e7ed;
+}
+.el-aside {
+  border-right: 1px solid #e4e7ed;
+}
+.el-menu {
+  border-right: none;
 }
 </style>
