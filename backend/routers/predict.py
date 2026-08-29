@@ -115,3 +115,15 @@ def prediction_history(equipment_id: int):
             {"id": equipment_id},
         ).mappings().all()
     return [dict(r) for r in rows]
+
+
+@router.delete("/history/{prediction_id}")
+def delete_prediction(prediction_id: int):
+    """删除一条历史评估记录"""
+    with engine.begin() as conn:
+        result = conn.execute(
+            text("DELETE FROM prediction WHERE id = :id"), {"id": prediction_id}
+        )
+        if result.rowcount == 0:
+            raise HTTPException(status_code=404, detail="记录不存在")
+    return {"message": "删除成功"}

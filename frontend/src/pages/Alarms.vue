@@ -29,6 +29,12 @@ function goDiagnose(row) {
   router.push({ path: '/diagnose', query: { alarm_id: row.id } })
 }
 
+async function createOrder(row) {
+  // 一键生成维修工单，诊断建议由后端自动带入
+  const resp = await api.post(`/workorders/from-alarm/${row.id}`)
+  ElMessage.success(`工单已生成：${resp.data.title}`)
+}
+
 // 级别颜色：严重红、警告橙、提示蓝
 function levelType(level) {
   return { 严重: 'danger', 警告: 'warning', 提示: 'primary' }[level] || 'info'
@@ -62,9 +68,10 @@ onMounted(loadData)
           <el-tag :type="row.status === '未处理' ? 'danger' : 'success'" effect="plain">{{ row.status }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="180">
+      <el-table-column label="操作" width="250">
         <template #default="{ row }">
           <el-button size="small" type="primary" @click="goDiagnose(row)">智能诊断</el-button>
+          <el-button size="small" type="warning" @click="createOrder(row)">生成工单</el-button>
           <el-button v-if="row.status === '未处理'" size="small" @click="resolve(row)">标记处理</el-button>
         </template>
       </el-table-column>

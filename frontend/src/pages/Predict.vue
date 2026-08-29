@@ -40,6 +40,12 @@ async function runPredict() {
   onSelectChange()  // 刷新历史记录
 }
 
+async function removeHistory(row) {
+  await api.delete(`/predict/history/${row.id}`)
+  ElMessage.success('记录已删除')
+  onSelectChange()
+}
+
 // 健康度颜色：高分绿、中分橙、低分红
 function scoreColor(score) {
   if (score > 60) return '#67c23a'
@@ -91,6 +97,11 @@ onMounted(loadEquipment)
         </template>
       </el-table-column>
       <el-table-column prop="method" label="模型" />
+      <el-table-column label="操作" width="90">
+        <template #default="{ row }">
+          <el-button size="small" type="danger" @click="removeHistory(row)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>
