@@ -93,7 +93,7 @@ npm run dev
 | 设备台账 | `GET/POST /api/equipment`、`PUT/DELETE /api/equipment/{id}` | 设备增删改查 |
 | 数据监测 | `GET /api/sensor/{unit}?start=&end=` | 传感器数据查询（按循环范围过滤） |
 | 健康评估 | `POST /api/predict/{equipment_id}` | 随机森林 RUL 预测并入库，RUL ≤ 90 自动生成预警 |
-| 健康评估 | `GET /api/predict/history/{equipment_id}` | 历史评估记录 |
+| 健康评估 | `GET /api/predict/history/{equipment_id}`、`DELETE /api/predict/history/{id}` | 历史评估记录查询与删除 |
 | 预警中心 | `GET /api/alarms?status=`、`PUT /api/alarms/{id}/resolve` | 预警列表、标记已处理 |
 | 智能诊断 | `POST /api/diagnose/{alarm_id}` | 规则引擎输出疑似故障部位 + 分层排查建议 |
 | 异常检测 | `POST /api/anomaly/{equipment_id}` | 孤立森林检测，异常自动生成"传感器异常"预警 |
@@ -106,6 +106,6 @@ npm run dev
 - [x] 阶段3（数据准备）：数据集与预处理结果入库 `data/`、`data/README.md` 说明、`prompt/` 会话记录备份（每阶段同步更新）
 - [x] D6：数据清洗入库 SQLite（100 台设备 + 13096 行传感器数据）、随机森林模型训练（MAE=11.84，RMSE=15.50）
 - [x] D7：后端 7 组接口全部完成，业务闭环后端链路打通，pytest 14 项全绿
-- [ ] D8：前端 6 个页面接入真实接口、业务闭环联调
+- [x] D8：前端 6 个页面全部接入真实接口（台账/监测/评估/预警/诊断/工单），业务闭环联调通过
 - [ ] D9：集成测试、设计报告、演示视频
 - [ ] D10：答辩
