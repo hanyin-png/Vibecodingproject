@@ -15,9 +15,14 @@ async function loadEquipment() {
   equipmentList.value = resp.data
 }
 
-// 选中设备变化时，加载它的历史评估记录
+// 选中设备变化时，清空结果并加载它的历史评估记录
 async function onSelectChange() {
   result.value = null
+  loadHistory()
+}
+
+// 只加载历史记录（不清本次结果，评估完刷新列表用）
+async function loadHistory() {
   if (selectedId.value !== null) {
     const resp = await api.get(`/predict/history/${selectedId.value}`)
     history.value = resp.data
@@ -37,13 +42,13 @@ async function runPredict() {
   if (resp.data.rul <= 90) {
     ElMessage.warning('剩余寿命偏低，已自动生成预警，请到预警中心查看')
   }
-  onSelectChange()  // 刷新历史记录
+  loadHistory()  // 刷新历史记录（不动本次结果卡片）
 }
 
 async function removeHistory(row) {
   await api.delete(`/predict/history/${row.id}`)
   ElMessage.success('记录已删除')
-  onSelectChange()
+  loadHistory()
 }
 
 // 健康度颜色：高分绿、中分橙、低分红
