@@ -47,6 +47,69 @@ def alarm_level(rul):
     return "提示"
 
 
+@router.post("/batch")
+def predict_all():
+    """一键批量评估：对全部设备做 RUL 预测（全机群体检）。
+
+    与单机评估的区别：
+    - 批量会"刷新"设备状态（健康/预警/故障按本次 RUL 重新判定）；
+    - 预警去重：已有未处理"剩余寿命不足"预警的设备不重复生成。
+    """
+    model = get_model()
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    count, alarm_count = 0, 0
+
+    with engine.begin() as conn:
+        equips = conn.execute(text("SELECT * FROM equipment")).mappings().all()
+        for equip in equips:
+            unit = int(equip["code"].split("-")[1])
+            rows = conn.execute(
+                text("SELECT * FROM sensor_data WHERE unit = :unit ORDER BY cycle"),
+                {"unit": unit},
+            ).mappings().all()
+            if not rows:
+                continue
+            df = pd.DataFrame([dict(r) for r in rows])
+            X, _ = extract_last_window(df)
+            if len(X) == 0:
+                continue
+
+            rul = float(model.predict(X)[0])
+            score = health_score(rul)
+            conn.execute(
+                text("INSERT INTO prediction (equipment_id, rul, health_score, method, created_at) "
+                     "VALUES (:eid, :rul, :score, 'random_forest', :now)"),
+                {"eid": equip["id"], "rul": round(rul, 1), "score": round(score, 1), "now": now},
+            )
+
+            # 按本次结果刷新设备健康状态
+            new_status = "故障" if rul <= 30 else ("预警" if rul <= 90 else "健康")
+            conn.execute(
+                text("UPDATE equipment SET status = :s WHERE id = :id"),
+                {"s": new_status, "id": equip["id"]},
+            )
+
+            # 预警去重：已有未处理预警的不重复生成
+            if rul <= 90:
+                existing = conn.execute(
+                    text("SELECT id FROM alarm WHERE equipment_id = :eid "
+                         "AND alarm_type = '剩余寿命不足' AND status = '未处理'"),
+                    {"eid": equip["id"]},
+                ).first()
+                if not existing:
+                    conn.execute(
+                        text("INSERT INTO alarm (equipment_id, alarm_type, level, message, status, created_at) "
+                             "VALUES (:eid, '剩余寿命不足', :level, :msg, '未处理', :now)"),
+                        {"eid": equip["id"], "level": alarm_level(rul),
+                         "msg": f"批量体检：预测剩余寿命 {rul:.0f} 个循环，健康度 {score:.0f} 分",
+                         "now": now},
+                    )
+                    alarm_count += 1
+            count += 1
+
+    return {"message": f"批量评估完成", "evaluated": count, "new_alarms": alarm_count}
+
+
 @router.post("/{equipment_id}")
 def predict_rul(equipment_id: int):
     """对一台设备做 RUL 预测，结果写入 prediction 表"""

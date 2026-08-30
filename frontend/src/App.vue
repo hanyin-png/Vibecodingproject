@@ -1,6 +1,7 @@
 <script setup>
 // 整体布局：左侧导航 + 右侧内容区（router-view 显示当前页面）
 const menus = [
+  { path: '/', title: '首页总览' },
   { path: '/equipment', title: '设备台账' },
   { path: '/monitor', title: '数据监测' },
   { path: '/predict', title: '健康评估' },
