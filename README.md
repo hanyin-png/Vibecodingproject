@@ -45,7 +45,9 @@ Vibecodingproject/
 ├── 一键启动.bat         # 双击启动整个系统
 ├── 学习笔记.md          # 阶段1：AI 工具学习、harness 与模型选型、git 原理、选题调研
 ├── 选题说明.md          # 阶段2：题目、目标、技术方向（含业务闭环图、技术方向映射图）
-├── 方案设计.md          # 阶段2：需求分析、方案论证、技术路线（含架构图）、计划
+├── 方案设计.md
+├── 智造24-1_王煜淇_22_课设报告.docx
+├── 智造24-1_王煜淇_22_设计说明书.docx          # 需求分析、方案论证、技术路线（含架构图）、计划
 └── README.md
 ```
 
@@ -88,15 +90,15 @@ npm run dev
 
 后端全部接口（前缀 `http://127.0.0.1:8000`）：
 
-| 模块 | 方法与路径 | 功能 |
-|---|---|---|
-| 设备台账 | `GET/POST /api/equipment`、`PUT/DELETE /api/equipment/{id}` | 设备增删改查 |
-| 数据监测 | `GET /api/sensor/{unit}?start=&end=` | 传感器数据查询（按循环范围过滤） |
-| 健康评估 | `POST /api/predict/{equipment_id}` | 随机森林 RUL 预测并入库，RUL ≤ 90 自动生成预警 |
-| 健康评估 | `GET /api/predict/history/{equipment_id}`、`DELETE /api/predict/history/{id}` | 历史评估记录查询与删除 |
-| 预警中心 | `GET /api/alarms?status=`、`PUT /api/alarms/{id}/resolve` | 预警列表、标记已处理 |
-| 智能诊断 | `POST /api/diagnose/{alarm_id}` | 规则引擎输出疑似故障部位 + 分层排查建议 |
-| 异常检测 | `POST /api/anomaly/{equipment_id}` | 孤立森林检测，异常自动生成"传感器异常"预警 |
+| 模块     | 方法与路径                                                                                             | 功能                                                                 |
+| -------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| 设备台账 | `GET/POST /api/equipment`、`PUT/DELETE /api/equipment/{id}`                                            | 设备增删改查                                                         |
+| 数据监测 | `GET /api/sensor/{unit}?start=&end=`                                                                   | 传感器数据查询（按循环范围过滤）                                     |
+| 健康评估 | `POST /api/predict/{equipment_id}`                                                                     | 随机森林 RUL 预测并入库，RUL ≤ 90 自动生成预警                       |
+| 健康评估 | `GET /api/predict/history/{equipment_id}`、`DELETE /api/predict/history/{id}`                          | 历史评估记录查询与删除                                               |
+| 预警中心 | `GET /api/alarms?status=`、`PUT /api/alarms/{id}/resolve`                                              | 预警列表、标记已处理                                                 |
+| 智能诊断 | `POST /api/diagnose/{alarm_id}`                                                                        | 规则引擎输出疑似故障部位 + 分层排查建议                              |
+| 异常检测 | `POST /api/anomaly/{equipment_id}`                                                                     | 孤立森林检测，异常自动生成"传感器异常"预警                           |
 | 维修工单 | `GET /api/workorders`、`POST /api/workorders/from-alarm/{alarm_id}`、`PUT /api/workorders/{id}/status` | 从预警一键生成工单（带入诊断建议）、状态流转（待处理→维修中→已完成） |
 
 ## 开发进度
